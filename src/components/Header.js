@@ -5,8 +5,8 @@ import { UserCircle, LogOut } from "lucide-react";
 
 export default function Header() {
   return (
-    <header className="flex justify-between items-center p-4 border-b">
-      <h1 className="text-2xl font-bold">Vizavostok</h1>
+    <header className="flex justify-end items-center p-4 border-b">
+      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="relative h-8 w-8 rounded-full">

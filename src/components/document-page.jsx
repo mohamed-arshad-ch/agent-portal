@@ -258,7 +258,7 @@ export function DocumentPageComponent() {
               <TableHead>Client Name</TableHead>
               <TableHead>Document Type</TableHead>
               <TableHead>Uploaded Date</TableHead>
-              <TableHead>Status</TableHead>
+             
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -268,7 +268,7 @@ export function DocumentPageComponent() {
                 <TableCell>{doc.clientName}</TableCell>
                 <TableCell>{doc.documentType}</TableCell>
                 <TableCell>{doc.uploadedDate}</TableCell>
-                <TableCell>{doc.status}</TableCell>
+               
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button variant="outline" size="icon">
@@ -289,7 +289,7 @@ export function DocumentPageComponent() {
       </div>
       {selectedDocument && (
         <div
-          className="w-1/3 ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
+          className="lg:w-2/3 w-2/3  ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Document Details</h2>
             <Button variant="ghost" size="icon" onClick={() => setSelectedDocument(null)}>

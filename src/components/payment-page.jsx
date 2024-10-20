@@ -86,7 +86,7 @@ export function PaymentPageComponent() {
       </div>
       {selectedPayment && (
         <div
-          className="w-1/3 ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
+          className="w-2/3 ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Payment Details</h2>
             <Button variant="ghost" size="icon" onClick={() => setSelectedPayment(null)}>
