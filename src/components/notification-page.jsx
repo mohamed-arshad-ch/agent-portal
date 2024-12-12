@@ -21,7 +21,7 @@ export function NotificationPageComponent() {
   }
 
   return (
-    (<div className="container mx-auto p-4">
+    (<div className="container mx-auto p-4 max-w-2xl">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-4 flex items-center">
           <Bell className="mr-2 h-6 w-6" />

@@ -51,7 +51,7 @@ export function PaymentPageComponent() {
   }
 
   return (
-    (<div className="container mx-auto p-4 flex">
+    (<div className="container mx-auto p-4 max-w-2xl flex">
       <div className="flex-grow">
         <h1 className="text-2xl font-bold mb-4">Payments</h1>
         <Table>

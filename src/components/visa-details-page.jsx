@@ -145,7 +145,7 @@ export function VisaDetailsPageComponent() {
   }
 
   return (
-    (<div className="container mx-auto p-4 flex">
+    (<div className="container mx-auto p-4 max-w-2xl flex">
       <div className="flex-grow">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold flex items-center">

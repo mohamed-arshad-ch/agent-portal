@@ -219,7 +219,7 @@ export function ClientsPageComponent() {
   }
 
   return (
-    (<div className="container mx-auto p-4">
+    (<div className="container mx-auto p-4 max-w-2xl">
       <h1 className="text-2xl font-bold mb-4">Clients</h1>
       <div className="flex justify-between items-center mb-4">
         <div className="relative">

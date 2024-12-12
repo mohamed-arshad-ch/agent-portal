@@ -39,7 +39,7 @@ export default function AgreementGenerator() {
 
   return (
     (<Layout>
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 max-w-2xl">
       <h1 className="text-2xl font-bold mb-4">Vizavostok Agreement Generator</h1>
       <div className="flex space-x-4 mb-4">
         <Button onClick={() => setIsModalOpen(true)}>Enter Agreement Data</Button>
