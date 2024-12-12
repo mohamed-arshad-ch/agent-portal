@@ -51,7 +51,7 @@ export function PaymentPageComponent() {
   }
 
   return (
-    (<div className="container mx-auto p-4 max-w-2xl flex">
+    (<div className="container mx-auto p-4 max-w-4xl flex">
       <div className="flex-grow">
         <h1 className="text-2xl font-bold mb-4">Payments</h1>
         <Table>
@@ -86,7 +86,7 @@ export function PaymentPageComponent() {
       </div>
       {selectedPayment && (
         <div
-          className="w-2/3 ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
+          className="w-1/3 ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Payment Details</h2>
             <Button variant="ghost" size="icon" onClick={() => setSelectedPayment(null)}>

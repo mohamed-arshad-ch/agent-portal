@@ -145,7 +145,7 @@ export function VisaDetailsPageComponent() {
   }
 
   return (
-    (<div className="container mx-auto p-4 max-w-2xl flex">
+    (<div className="container mx-auto p-4 max-w-4xl flex">
       <div className="flex-grow">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold flex items-center">
@@ -180,12 +180,12 @@ export function VisaDetailsPageComponent() {
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" onClick={() => handleViewDetails(country)}>
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
+                      <Eye className="h-4 w-4" />
+                     
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => handleEditClick(country)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
+                      <Edit className="h-4 w-4 " />
+                      
                     </Button>
                   </div>
                 </TableCell>
@@ -196,7 +196,7 @@ export function VisaDetailsPageComponent() {
       </div>
       {selectedCountry && (
         <div
-          className="w-2/3 ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
+          className="w-1/3 ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">{selectedCountry.name} Visa Details</h2>
             <Button variant="outline" size="sm" onClick={() => setIsAddModalOpen(true)}>

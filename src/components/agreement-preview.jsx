@@ -3,17 +3,22 @@ export function AgreementPreview({
 }) {
   return (
     (
-      <div className="printable-agreement border p-8 font-serif text-sm leading-relaxed relative bg-white max-w-4xl mx-auto shadow-lg rounded-lg">
-      {/* Watermark */}
-      <img
+      <div className="printable-agreement border  p-8  relative text-sm leading-relaxed  bg-white max-w-4xl mx-auto ">
+     
+
+     
+       {/* Watermark */}
+       <img
         src="Vizavostok-logo-full.png"
         alt="Watermark"
         className="absolute opacity-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 pointer-events-none"
       />
 
+
+
       {/* Header */}
       <header className="text-center mb-10">
-        <img src="/Vizavostok-logo-full.png" alt="Vizavostok Logo" className="h-16 mx-auto mb-4" />
+        <img src="/Vizavostok-logo-full.png" alt="Vizavostok Logo" className="h-36 mx-auto mb-4" />
         <h1 className="text-2xl font-extrabold uppercase text-gray-800">Agreement for Visa and Work Permit Services</h1>
         <div className="mt-2 border-b-2 border-gray-300 w-32 mx-auto"></div>
       </header>
@@ -24,7 +29,7 @@ export function AgreementPreview({
       </p>
 
       {/* Parties Details */}
-      <section className="mb-8">
+      <section className="mb-8 ">
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-gray-900">First Party:</h2>
           <p>Name: <span className="font-medium">{data.firstPartyName}</span></p>
@@ -53,10 +58,18 @@ export function AgreementPreview({
         <li>
           <strong>Total Cost:</strong> The total cost for obtaining the visa, work permit, and other services, without flight tickets, is ₹<span className="font-medium">{data.totalCost.toLocaleString()}</span>.
         </li>
-        <li >
+        
+     
+
+
+
+
+      
+       
+       <li className="page-break" >
           <strong>Advance Payment:</strong> The Second Party shall pay an advance amount of ₹<span className="font-medium">{data.advancePayment.toLocaleString()}</span> to the First Party on the signing of this agreement. The remaining balance of ₹<span className="font-medium">{data.remainingPayment.toLocaleString()}</span> shall be paid by <span className="font-medium">{data.remainingPaymentDate}</span> to complete the payment.
         </li>
-        <li className="pt-36">
+        <li className="">
           <strong>Timeline for Service Completion:</strong> The First Party agrees to provide the visa and work permit services to the Second Party by <span className="font-medium">{data.completionDate}</span>, which is no later than 15 February 2025.
         </li>
         <li>
@@ -77,7 +90,7 @@ export function AgreementPreview({
         IN WITNESS WHEREOF, the parties have executed this Agreement on the day and year first above written.
       </p>
 
-      <div className="flex justify-between mt-56">
+      <div className=" flex justify-between mt-32">
         <div>
           <p><strong>First Party:</strong></p>
           <p>Signature: _________________________</p>
@@ -91,8 +104,13 @@ export function AgreementPreview({
           <p>Date: {data.agreementDate}</p>
         </div>
       </div>
+     
 
-      <div className="mt-10   pt-20">
+
+
+
+     
+     <div className="page-break">
         <h2 className="text-lg font-bold mb-4 text-gray-800 ">General Terms and Conditions for Consultancy Services</h2>
         <ol className="list-decimal pl-6 space-y-4 text-gray-700">
           <li>
@@ -137,7 +155,14 @@ export function AgreementPreview({
           </li>
         </ol>
       </div>
+     
+
+
+
+
     </div>
+
+    
     )
   );
 }

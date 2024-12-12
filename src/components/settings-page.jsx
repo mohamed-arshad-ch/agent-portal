@@ -54,7 +54,7 @@ export function SettingsPageComponent() {
 
   return (
     (
-      <div className="container mx-auto p-4 max-w-2xl">
+      <div className="container mx-auto p-4 max-w-4xl">
         <h1 className="text-2xl font-bold mb-4 flex items-center">
           <Settings className="mr-2 h-6 w-6" />
           Project Settings

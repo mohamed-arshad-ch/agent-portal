@@ -34,12 +34,13 @@ export default function AgreementGenerator() {
       document.body.innerHTML = printContent.innerHTML;
       window.print();
       document.body.innerHTML = originalContents;
+      window.location.href = "/agreement"
     }
   };
 
   return (
     (<Layout>
-        <div className="container mx-auto p-4 max-w-2xl">
+        <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-2xl font-bold mb-4">Vizavostok Agreement Generator</h1>
       <div className="flex space-x-4 mb-4">
         <Button onClick={() => setIsModalOpen(true)}>Enter Agreement Data</Button>
