@@ -4,11 +4,7 @@
 
 
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
+
 
 @layer utilities {
   .text-balance {
@@ -79,4 +75,27 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@media print {
+  
+  .printable-agreement,
+  .printable-agreement * {
+    visibility: visible;
+  }
+  .printable-agreement {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+}
+
+
+.printable-agreement {
+  font-size: 12pt;
+  line-height: 1.5;
 }

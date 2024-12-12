@@ -56,6 +56,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           <SidebarItem icon={<FileText className="w-5 h-5" />} label="Documents" href="/documents" />
           <SidebarItem icon={<FileText className="w-5 h-5" />} label="Visa" href="/visa" />
           <SidebarItem icon={<FileText className="w-5 h-5" />} label="MBBS" href="/mbbs" />
+          <SidebarItem icon={<FileText className="w-5 h-5" />} label="Agreement" href="/agreement" />
           <SidebarItem icon={<Bell className="w-5 h-5" />} label="Notifications" href="/notifications" />
           <SidebarItem icon={<Settings className="w-5 h-5" />} label="Settings" href="/settings" />
         </nav>
