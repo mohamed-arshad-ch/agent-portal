@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -16,18 +16,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Label } from "@/components/ui/label"
-import { Edit, Trash2, Eye, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Edit, Trash2, Eye, Search, ChevronLeft, ChevronRight, Download, RemoveFormatting, Delete, DeleteIcon, TrashIcon } from "lucide-react"
+import axios from 'axios';
 
 // Mock client data
-const mockClients = [
-  { id: 1, name: "John Doe", passportNumber: "A1234567", photo: "/placeholder-avatar.jpg", document: null },
-  { id: 2, name: "Jane Smith", passportNumber: "B9876543", photo: "/placeholder-avatar.jpg", document: null },
-  { id: 3, name: "Alice Johnson", passportNumber: "C4567890", photo: "/placeholder-avatar.jpg", document: null },
-  // Add more mock clients as needed
-]
 
 export function ClientsPageComponent() {
-  const [clients, setClients] = useState(mockClients)
+  const [clients, setClients] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedClient, setSelectedClient] = useState(null)
   const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false)
@@ -39,7 +34,7 @@ export function ClientsPageComponent() {
 
   const filteredClients = clients.filter(client =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.passportNumber.toLowerCase().includes(searchTerm.toLowerCase()))
+    client.passport.toLowerCase().includes(searchTerm.toLowerCase()))
 
   const indexOfLastClient = currentPage * clientsPerPage
   const indexOfFirstClient = indexOfLastClient - clientsPerPage
@@ -47,10 +42,70 @@ export function ClientsPageComponent() {
 
   const totalPages = Math.ceil(filteredClients.length / clientsPerPage)
 
-  const handleAddClient = (updatedClient) => {
-    setClients([...clients, { ...updatedClient, id: clients.length + 1 }])
-    setNewClient({ name: "", passportNumber: "", photo: null, document: null })
-    setIsAddClientModalOpen(false)
+
+  useEffect(()=>{
+    
+   const getClientDetails = async ()=>{
+    try {
+      const agent = JSON.parse(localStorage.getItem("user"))
+
+     
+      
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clients?populate=*&filters[agent_id][$eq]=${agent.id}&sort=createdAt:desc`,{headers:{
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      }})
+
+      console.log(res.data);
+      
+      setClients(res.data.data)
+    } catch (error) {
+      
+    }
+   }
+
+   getClientDetails()
+  },[])
+  const handleAddClient = async (updatedClient) => {
+    try {
+      const requestBody = {
+        data: {
+          name: updatedClient.name,
+          passport: updatedClient.passportNumber,
+          passport_document: updatedClient.document.id,
+          passportsize_photo: updatedClient.photo.id,
+          agent_id: JSON.parse(localStorage.getItem("user")).id
+        }
+      };
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/clients`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+          }
+        }
+      );
+
+      if (response.data) {
+        const agent = JSON.parse(localStorage.getItem("user"));
+        const refreshedData = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/clients?populate=*&filters[agent_id][$eq]=${agent.id}&sort=createdAt:desc`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+            }
+          }
+        );
+        
+        setClients(refreshedData.data.data);
+        setNewClient({ name: "", passportNumber: "", photo: null, document: null });
+        setIsAddClientModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error adding client:", error);
+      // Handle error appropriately (show error message to user)
+    }
   }
 
   const handleEditClient = (updatedClient) => {
@@ -69,6 +124,9 @@ export function ClientsPageComponent() {
     const [localPassportNumber, setLocalPassportNumber] = useState(client?.passportNumber || "")
     const [localDocument, setLocalDocument] = useState(client?.document || null)
     const [localPhoto, setLocalPhoto] = useState(client?.photo || null)
+    const [localPhotoId, setLocalPhotoId] = useState(null)
+
+
     return (
       (<Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent>
@@ -94,7 +152,7 @@ export function ClientsPageComponent() {
               <Label htmlFor="document">Document Upload</Label>
               {localDocument ? (
                 <div className="mt-2 flex items-center justify-between p-2 border rounded">
-                  {localDocument.type.startsWith('image/') ? (
+                  {localDocument.mime.startsWith('image/') ? (
                     <img
                       src={URL.createObjectURL(localDocument)}
                       alt="Uploaded document"
@@ -133,12 +191,32 @@ export function ClientsPageComponent() {
                       type="file"
                       className="hidden"
                       accept=".svg,.png,.jpg,.gif,.pdf"
-                      onChange={(e) => {
+                      onChange={async(e) => {
                         e.stopPropagation();
                         const file = e.target.files[0];
                         if (file) {
-                          const updatedClient = { ...client, document: file };
-                          setLocalDocument(file);
+
+                          try {
+                            var formdata = new FormData();
+formdata.append("files", file);
+                            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload/`,formdata,{headers:{
+                              'Content-Type': 'multipart/form-data',
+                              Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+
+                          
+                              
+                              
+                            }})
+
+                            console.log(res.data);
+                            const updatedClient = { ...client, document: file,passport_document:res.data[0].id };
+                          
+                          setLocalDocument(res.data[0]);
+                            
+                          } catch (error) {
+                            
+                          }
+                          
                         }
                       }} />
                   </label>
@@ -184,15 +262,38 @@ export function ClientsPageComponent() {
                       type="file"
                       className="hidden"
                       accept="image/*"
-                      onChange={(e) => {
+                      onChange={async(e) => {
                         e.stopPropagation();
                         const file = e.target.files[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setLocalPhoto(reader.result);
-                          };
-                          reader.readAsDataURL(file);
+                          
+
+                          try {
+                            var formdata = new FormData();
+formdata.append("files", file);
+                            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload/`,formdata,{headers:{
+                              'Content-Type': 'multipart/form-data',
+                              Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+
+                          
+                              
+                              
+                            }})
+
+                            console.log(res.data);
+                            const updatedClient = { ...client, document: file,passport_document:res.data[0].id };
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              console.log(reader.result,"j");
+                              
+                              setLocalPhoto(reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                            setLocalPhotoId(res.data[0])
+                            
+                          } catch (error) {
+                            
+                          }
                         }
                       }} />
                   </label>
@@ -202,11 +303,10 @@ export function ClientsPageComponent() {
             <Button
               onClick={() => {
                 const updatedClient = {
-                  ...client,
                   name: localName,
                   passportNumber: localPassportNumber,
                   document: localDocument,
-                  photo: localPhoto
+                  photo: localPhotoId
                 };
                 onSave(updatedClient);
               }}>
@@ -246,12 +346,12 @@ export function ClientsPageComponent() {
             <TableRow key={client.id}>
               <TableCell>
                 <Avatar>
-                  <AvatarImage src={client.photo} />
+                  <AvatarImage src={`${client.passportsize_photo[0].formats.small.url}`} />
                   <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </TableCell>
               <TableCell>{client.name}</TableCell>
-              <TableCell>{client.passportNumber}</TableCell>
+              <TableCell>{client.passport}</TableCell>
               <TableCell>
                 <div className="flex space-x-2">
                   <Button
@@ -312,30 +412,60 @@ export function ClientsPageComponent() {
           className="fixed inset-y-0 right-0 w-96 bg-background shadow-lg p-4 overflow-y-auto">
           <h2 className="text-xl font-bold mb-4">Client Details</h2>
           <Avatar className="w-24 h-24 mb-4">
-            <AvatarImage src={selectedClient.photo} />
+            <AvatarImage src={`${selectedClient.passportsize_photo[0].formats.small.url}`} />
             <AvatarFallback>{selectedClient.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="space-y-2">
             <p><strong>Name:</strong> {selectedClient.name}</p>
-            <p><strong>Passport Number:</strong> {selectedClient.passportNumber}</p>
-            {selectedClient?.document && (
+            <p><strong>Passport Number:</strong> {selectedClient.passport}</p>
+            {selectedClient?.passportsize_photo && (
               <div>
                 <strong>Uploaded Document:</strong>
-                <p>{selectedClient.document.name}</p>
-                <Button
+                <div className="mt-2 flex items-center justify-between p-2 border rounded">
+                  <img
+                    src={`${selectedClient.passportsize_photo[0].url}`}
+                    alt="Passport Size Photo"
+                    className="w-16 h-16 object-cover" />
+                 <div className='flex gap-2'>
+                 <Button variant="destructive" size="sm"   onClick={() => setLocalDocument(null)}>
+                  <TrashIcon className="w-5 h-5" />
+                  </Button>
+                  <Button  size="sm" onClick={() => setLocalDocument(null)}>
+                  <Download className="w-5 h-5" />
+                  </Button>
+                 </div>
+                </div>
+
+                <div className="mt-2 flex items-center justify-between p-2 border rounded">
+                 
+                    <span>{selectedClient.passport_document[0].name}</span>
+                 
+                    <div className='flex gap-2'>
+                 <Button variant="destructive" size="sm"   onClick={() => setLocalDocument(null)}>
+                  <TrashIcon className="w-5 h-5" />
+                  </Button>
+                  <Button  size="sm" onClick={() => setLocalDocument(null)}>
+                  <Download className="w-5 h-5" />
+                  </Button>
+                 </div>
+                </div>
+
+
+                <p>{selectedClient.passport_document.name}</p>
+                {/* <Button
                   className="mt-2"
                   onClick={() => {
-                    const url = URL.createObjectURL(selectedClient.document);
+                    const url = URL.createObjectURL(selectedClient.passport_document);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = selectedClient.document.name;
+                    a.download = selectedClient.passport_document;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                   }}>
                   Download
-                </Button>
+                </Button> */}
               </div>
             )}
           </div>

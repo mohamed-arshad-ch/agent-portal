@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -21,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Eye, Trash2, X } from "lucide-react"
+import axios from 'axios'
+import { Input } from './ui/input'
 
 // Mock data for payments
 const initialPayments = [
@@ -30,8 +32,68 @@ const initialPayments = [
 ]
 
 export function PaymentPageComponent() {
-  const [payments, setPayments] = useState(initialPayments)
+  const [payments, setPayments] = useState([])
   const [selectedPayment, setSelectedPayment] = useState(null)
+
+
+   // Add new states for pagination, search, and filtering
+   const [currentPage, setCurrentPage] = useState(1)
+   const [searchQuery, setSearchQuery] = useState("")
+   const [statusFilter, setStatusFilter] = useState("all")
+   const itemsPerPage = 10 // Number of items per page
+ 
+   useEffect(() => {
+     const fetchPayments = async () => {
+       try {
+         const agent = JSON.parse(localStorage.getItem("user"))
+         const response = await axios.get(
+           `${process.env.NEXT_PUBLIC_API_URL}/uploaded-documents?populate=*&filters[agent][$eq]=${agent.id}&sort=createdAt:desc&filters[document_type][$eq]=payment_slip`,
+           {
+             headers: {
+               Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+             }
+           }
+         )
+         setPayments(response.data.data)
+       } catch (error) {
+         console.error("Error fetching clients:", error)
+       }
+     }
+ 
+     fetchPayments()
+   }, [])
+ 
+   // Filter and search logic
+   const filteredPayments = payments.filter(payment => {
+     const matchesSearch = payment.client.name.toLowerCase().includes(searchQuery.toLowerCase())
+     const matchesStatus = statusFilter === "all" || payment.document_status === statusFilter
+     return matchesSearch && matchesStatus
+   })
+ 
+   // Pagination logic
+   const totalPages = Math.ceil(filteredPayments.length / itemsPerPage)
+   const paginatedPayments = filteredPayments.slice(
+     (currentPage - 1) * itemsPerPage,
+     currentPage * itemsPerPage
+   )
+ 
+   // Add these functions for handling pagination, search, and filtering
+   const handlePageChange = (page) => {
+     setCurrentPage(page)
+   }
+ 
+   const handleSearch = (e) => {
+     setSearchQuery(e.target.value)
+     setCurrentPage(1) // Reset to first page when searching
+   }
+ 
+   const handleStatusFilter = (status) => {
+     setStatusFilter(status)
+     setCurrentPage(1) // Reset to first page when filtering
+   }
+
+  
+
 
   const handleDelete = (id) => {
     setPayments(payments.filter(payment => payment.id !== id))
@@ -54,21 +116,44 @@ export function PaymentPageComponent() {
     (<div className="container mx-auto p-4 max-w-4xl flex">
       <div className="flex-grow">
         <h1 className="text-2xl font-bold mb-4">Payments</h1>
+
+        <div className="flex gap-4 mb-4">
+          <Input
+            placeholder="Search by client name..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="max-w-xs"
+          />
+          <Select value={statusFilter} onValueChange={handleStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="processing">Processing</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Client Name</TableHead>
+              <TableHead>Paid Amount</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {payments.map((payment) => (
+            {paginatedPayments.map((payment) => (
               <TableRow key={payment.id}>
-                <TableCell>{payment.clientName}</TableCell>
-                <TableCell>{payment.date}</TableCell>
-                <TableCell>{payment.status}</TableCell>
+                <TableCell>{payment.client.name}</TableCell>
+                <TableCell>{payment.paidAmount}</TableCell>
+                <TableCell>{payment.createdAt}</TableCell>
+                <TableCell>{payment.document_status}</TableCell>
                 <TableCell>
                   <div className="flex space-x-2">
                     <Button variant="outline" size="icon" onClick={() => handleViewDetails(payment)}>
@@ -83,6 +168,32 @@ export function PaymentPageComponent() {
             ))}
           </TableBody>
         </Table>
+        <div className="flex justify-center gap-2 mt-4">
+          <Button
+            variant="outline"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          {[...Array(totalPages)].map((_, index) => (
+            <Button
+              key={index + 1}
+              variant={currentPage === index + 1 ? "default" : "outline"}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+          <Button
+            variant="outline"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+        
       </div>
       {selectedPayment && (
         <div
@@ -97,22 +208,22 @@ export function PaymentPageComponent() {
             <div className="space-y-4">
               <div>
                 <Label>Client Name</Label>
-                <div className="mt-1">{selectedPayment.clientName}</div>
+                <div className="mt-1">{selectedPayment.client.name}</div>
               </div>
               <Separator />
               <div>
                 <Label>Date</Label>
-                <div className="mt-1">{selectedPayment.date}</div>
+                <div className="mt-1">{selectedPayment.createdAt}</div>
               </div>
               <Separator />
               <div>
                 <Label>Status</Label>
-                <div className="mt-1">{selectedPayment.status}</div>
+                <div className="mt-1">{selectedPayment.document_status}</div>
               </div>
               <Separator />
               <div>
                 <Label>Agent Name</Label>
-                <div className="mt-1">{selectedPayment.agentName}</div>
+                <div className="mt-1">{selectedPayment.agent.username}</div>
               </div>
               <Separator />
               <div>

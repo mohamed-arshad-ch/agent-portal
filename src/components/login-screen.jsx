@@ -31,7 +31,7 @@ export function LoginScreenComponent() {
     }
 
     try {
-      const response = await axios.post('http://localhost:1337/api/auth/local', {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/local`, {
         identifier: username,
         password: password,
       });

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -33,6 +33,7 @@ import { CalendarIcon, Edit, Trash2, Eye, X, Download } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import axios from 'axios'
 
 // Mock data for documents
 const mockDocuments = [
@@ -51,24 +52,141 @@ const mockClients = [
 ]
 
 export function DocumentPageComponent() {
-  const [documents, setDocuments] = useState(mockDocuments)
+  const [documents, setDocuments] = useState([])
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState(null)
+  const [clientList, setClientList] = useState([])
+  const [clientSearch, setClientSearch] = useState("")
   const [documentType, setDocumentType] = useState("")
   const [releasingDate, setReleasingDate] = useState(null)
   const [selectedFiles, setSelectedFiles] = useState([])
+  const [localDocument, setLocalDocument] = useState(null)
   const [selectedDocument, setSelectedDocument] = useState(null)
   const [paidAmount, setPaidAmount] = useState("")
+  const [displayClientName, setDisplayClientName] = useState("")
 
-  const handleUpload = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+const [itemsPerPage] = useState(10);
+const [searchTerm, setSearchTerm] = useState("");
+const [filterDocumentType, setFilterDocumentType] = useState("");
+const [filterStatus, setFilterStatus] = useState("");
+
+
+const filteredDocuments = documents.filter(doc => {
+  const matchesSearch = doc.client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doc.document_type.toLowerCase().includes(searchTerm.toLowerCase());
+  const matchesDocType = filterDocumentType ? doc.document_type === filterDocumentType : true;
+  const matchesStatus = filterStatus ? doc.document_status === filterStatus : true;
+  
+  return matchesSearch && matchesDocType && matchesStatus;
+});
+
+const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+const currentItems = filteredDocuments.slice(indexOfFirstItem, indexOfLastItem);
+const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
+
+
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const agent = JSON.parse(localStorage.getItem("user"))
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/clients?populate=*&filters[agent_id][$eq]=${agent.id}&sort=createdAt:desc`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+            }
+          }
+        )
+        console.log('Fetched clients:', response.data.data)
+        setClientList(response.data.data)
+      } catch (error) {
+        console.error("Error fetching clients:", error)
+      }
+    }
+
+    fetchClients()
+  }, [])
+
+  const handleClientSelect = (client) => {
+    setSelectedClient(client)
+    setDisplayClientName(client.name)
+    setClientSearch("")
+  }
+  
+
+  useEffect(()=>{
+    
+    const getDocumentDetails = async ()=>{
+     try {
+       const agent = JSON.parse(localStorage.getItem("user"))
+ 
+      
+       
+       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/uploaded-documents?populate=*&filters[agent][$eq]=${agent.id}&sort=createdAt:desc`,{headers:{
+         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+       }})
+ 
+       console.log(res.data);
+       
+       setDocuments(res.data.data)
+     } catch (error) {
+       
+     }
+    }
+ 
+    getDocumentDetails()
+   },[])
+
+
+  const handleUpload = async () => {
     // Here you would typically handle the upload logic
-    console.log(
-      "Uploading:",
-      { selectedClient, documentType, releasingDate, selectedFiles, paidAmount }
-    )
-    setIsUploadModalOpen(false)
-    setSelectedFiles([]) // Clear selected files after upload
-    setPaidAmount("") // Clear paid amount after upload
+    try {
+      const requestBody = {
+        data: {
+          client:selectedClient.id,
+          document_type:documentType,
+          agent: JSON.parse(localStorage.getItem("user")).id,
+          document: localDocument.id,
+          paidAmount: paidAmount,
+          releasingDate:releasingDate,
+          
+        }
+      };
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/uploaded-documents`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+          }
+        }
+      );
+
+      if (response.data) {
+        const agent = JSON.parse(localStorage.getItem("user"));
+        const refreshedData = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/uploaded-documents?populate=*&filters[agent][$eq]=${agent.id}&sort=createdAt:desc`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+            }
+          }
+        );
+        setDocuments(refreshedData.data.data)
+        setIsUploadModalOpen(false)
+        setSelectedFiles([]) // Clear selected files after upload
+        setPaidAmount("") // Clear paid amount after upload
+      }
+    } catch (error) {
+      console.error("Error adding client:", error);
+      // Handle error appropriately (show error message to user)
+    }
+
+    
   }
 
   const handleDelete = (id) => {
@@ -97,18 +215,35 @@ export function DocumentPageComponent() {
                   <Label htmlFor="client" className="text-right">
                     Client
                   </Label>
-                  <div className="col-span-3">
-                    <Select
-                      onValueChange={(value) => setSelectedClient(mockClients.find(client => client.id === parseInt(value)))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select client" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mockClients.map((client) => (
-                          <SelectItem key={client.id} value={client.id.toString()}>{client.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="col-span-3 relative">
+                    <Input
+                      id="client"
+                      value={displayClientName || clientSearch}
+                      onChange={(e) => {
+                        setDisplayClientName("")
+                        setClientSearch(e.target.value)
+                        setSelectedClient(null)
+                      }}
+                      placeholder="Search client"
+                      className="w-full"
+                    />
+                    {clientSearch && !displayClientName && (
+                      <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                        {clientList
+                          .filter(client => 
+                            client.name.toLowerCase().includes(clientSearch.toLowerCase())
+                          )
+                          .map(client => (
+                            <div
+                              key={client.id}
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              onClick={() => handleClientSelect(client)}
+                            >
+                              {client.name}
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -206,11 +341,33 @@ export function DocumentPageComponent() {
                           type="file"
                           className="hidden"
                           multiple
-                          onChange={(e) => {
+                          onChange={async(e) => {
                             const fileList = e.target.files;
                             if (fileList) {
                               const filesArray = Array.from(fileList);
                               setSelectedFiles(filesArray);
+                            }
+
+                            try {
+                              const file = e.target.files[0];
+                              var formdata = new FormData();
+  formdata.append("files", file);
+                              const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload/`,formdata,{headers:{
+                                'Content-Type': 'multipart/form-data',
+                                Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+  
+                            
+                                
+                                
+                              }})
+  
+                              console.log(res.data);
+                              const updatedClient = { ...client, document: file,passport_document:res.data[0].id };
+                            
+                              setLocalDocument(res.data[0]);
+                              
+                            } catch (error) {
+                              
                             }
                           }} />
                       </label>
@@ -252,22 +409,58 @@ export function DocumentPageComponent() {
             </DialogContent>
           </Dialog>
         </div>
+        <div className="mb-4 space-y-4">
+  <div className="flex gap-4">
+    <Input
+      placeholder="Search documents..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="max-w-sm"
+    />
+     <Select onValueChange={setFilterDocumentType}>
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select document type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="payment_slip">Payment Slip</SelectItem>
+                        <SelectItem value="submission_slip">Submission Slip</SelectItem>
+                        <SelectItem value="releasing_date">Invitation Releasing Date Document</SelectItem>
+                        <SelectItem value="work_permit">Work Permit</SelectItem>
+                        <SelectItem value="invitation">Invitation</SelectItem>
+                        <SelectItem value="offer_letter">Offer Letter</SelectItem>
+                      </SelectContent>
+                    </Select>
+    <Select  onValueChange={setFilterStatus}>
+      <SelectTrigger className="w-[200px]">
+        <SelectValue placeholder="Filter by status" />
+      </SelectTrigger>
+      <SelectContent>
+       
+        <SelectItem value="processing">Processing</SelectItem>
+        <SelectItem value="approved">Approved</SelectItem>
+        <SelectItem value="rejected">Rejected</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
+</div>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Client Name</TableHead>
               <TableHead>Document Type</TableHead>
+              <TableHead>Document Status</TableHead>
               <TableHead>Uploaded Date</TableHead>
              
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {documents.map((doc) => (
+            {currentItems.map((doc) => (
               <TableRow key={doc.id}>
-                <TableCell>{doc.clientName}</TableCell>
-                <TableCell>{doc.documentType}</TableCell>
-                <TableCell>{doc.uploadedDate}</TableCell>
+                <TableCell>{doc.client.name}</TableCell>
+                <TableCell>{doc.document_type}</TableCell>
+                <TableCell>{doc.document_status}</TableCell>
+                <TableCell>{doc.createdAt}</TableCell>
                
                 <TableCell>
                   <div className="flex space-x-2">
@@ -286,10 +479,45 @@ export function DocumentPageComponent() {
             ))}
           </TableBody>
         </Table>
+
+        <div className="flex items-center justify-between space-x-2 py-4">
+  <div className="text-sm text-muted-foreground">
+    Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredDocuments.length)} of{" "}
+    {filteredDocuments.length} entries
+  </div>
+  <div className="flex space-x-2">
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+      disabled={currentPage === 1}
+    >
+      Previous
+    </Button>
+    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+      <Button
+        key={page}
+        variant={currentPage === page ? "default" : "outline"}
+        size="sm"
+        onClick={() => setCurrentPage(page)}
+      >
+        {page}
+      </Button>
+    ))}
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+      disabled={currentPage === totalPages}
+    >
+      Next
+    </Button>
+  </div>
+</div>
       </div>
       {selectedDocument && (
         <div
-          className="lg:w-2/3 w-2/3  ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
+          className="lg:w-1/3 w-1/3  ml-4 bg-background border-l p-4 fixed right-0 top-0 h-full overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Document Details</h2>
             <Button variant="ghost" size="icon" onClick={() => setSelectedDocument(null)}>
@@ -300,32 +528,32 @@ export function DocumentPageComponent() {
             <div className="space-y-4">
               <div>
                 <Label>Client Name</Label>
-                <div className="mt-1">{selectedDocument.clientName}</div>
+                <div className="mt-1">{selectedDocument.client.name}</div>
               </div>
               <Separator />
               <div>
                 <Label>Document Type</Label>
-                <div className="mt-1">{selectedDocument.documentType}</div>
+                <div className="mt-1">{selectedDocument.document_type}</div>
               </div>
               <Separator />
               <div>
                 <Label>Uploaded Date</Label>
-                <div className="mt-1">{selectedDocument.uploadedDate}</div>
+                <div className="mt-1">{selectedDocument.createdAt}</div>
               </div>
               <Separator />
               <div>
                 <Label>Status</Label>
-                <div className="mt-1">{selectedDocument.status}</div>
+                <div className="mt-1">{selectedDocument.document_status}</div>
               </div>
               <Separator />
               <div>
                 <Label>Uploaded By</Label>
-                <div className="mt-1">{selectedDocument.agentName}</div>
+                <div className="mt-1">{selectedDocument.agent.username}</div>
               </div>
               <Separator />
               <div>
                 <Label>File Name</Label>
-                <div className="mt-1">{selectedDocument.fileName}</div>
+                <div className="mt-1">{selectedDocument.document[0].name}</div>
               </div>
               {selectedDocument.documentType === "Payment  Slip" && (
                 <>
@@ -340,8 +568,44 @@ export function DocumentPageComponent() {
               <div>
                 <Button
                   className="w-full"
-                  onClick={() => console.log(`Downloading ${selectedDocument.fileName}`)}>
+                  onClick={async() =>{
+                   
+                    try {
+                      const response = await fetch(selectedDocument.document[0].url, {
+                        method: "GET",
+                      });
+                
+                      if (!response.ok) {
+                        throw new Error("Failed to fetch the file");
+                      }
+                
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const link = document.createElement("a");
+                      link.href = url;
+                      link.setAttribute("download", selectedDocument.document[0].name); // Set the file name
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      window.URL.revokeObjectURL(url); // Clean up the object URL
+                    } catch (error) {
+                      console.error("Error while downloading the file:", error);
+                    }
+                    
+                  }}>
                   <Download className="mr-2 h-4 w-4" /> Download Document
+                </Button>
+              </div>
+
+              <div>
+                <Button
+                  className="w-full"
+                  onClick={async() =>{
+                   
+                    window.open(selectedDocument.document[0].url, "_blank");
+                    
+                  }}>
+                  <Eye className="mr-2 h-4 w-4" /> View Document
                 </Button>
               </div>
             </div>
