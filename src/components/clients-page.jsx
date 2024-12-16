@@ -41,7 +41,7 @@ export function ClientsPageComponent() {
   const currentClients = filteredClients.slice(indexOfFirstClient, indexOfLastClient)
 
   const totalPages = Math.ceil(filteredClients.length / clientsPerPage)
-
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(()=>{
     
@@ -58,6 +58,7 @@ export function ClientsPageComponent() {
       console.log(res.data);
       
       setClients(res.data.data)
+      setIsLoading(false)
     } catch (error) {
       
     }
@@ -318,6 +319,7 @@ formdata.append("files", file);
     );
   }
 
+  if (isLoading) return <div>Loading...</div>;
   return (
     (<div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-2xl font-bold mb-4">Clients</h1>
