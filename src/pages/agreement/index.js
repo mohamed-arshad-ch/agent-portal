@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button'
 import { InputModal } from '@/components/input-modal'
 import { AgreementPreview } from '@/components/agreement-preview'
 import Layout from '@/components/Layout'
+import withAuth from '../../../app/leads/hooks/withAuth'
 
-export default function AgreementGenerator() {
+function AgreementGenerator() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [agreementData, setAgreementData] = useState({
     firstPartyName: 'VIZAVOSTOK INTERNATIONAL LLP',
@@ -57,3 +58,4 @@ export default function AgreementGenerator() {
   );
 }
 
+export default withAuth(AgreementGenerator);

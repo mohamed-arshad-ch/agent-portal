@@ -1,9 +1,10 @@
 import AddLeadButton from "@/components/AddLeadButton";
 import Layout from "@/components/Layout";
 import LeadsTable from "@/components/LeadsTable";
+import withAuth from "../../../app/leads/hooks/withAuth";
 
 
-export default function LeadsPage() {
+function LeadsPage() {
   return (
     (<Layout>
     <div className="container mx-auto p-4 max-w-4xl">
@@ -20,3 +21,4 @@ export default function LeadsPage() {
   );
 }
 
+export default withAuth(LeadsPage);

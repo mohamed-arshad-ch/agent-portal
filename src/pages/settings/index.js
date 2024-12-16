@@ -7,10 +7,12 @@ import { SettingsPageComponent } from "@/components/settings-page";
 
 
 
-export default function AdminDash() {
+function Settings() {
   return (
    <Layout>
     <SettingsPageComponent/>
    </Layout>
   );
 }
+
+export default withAuth(Settings);

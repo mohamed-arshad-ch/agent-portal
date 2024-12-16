@@ -5,13 +5,16 @@ import { AdminDashboardComponent } from "@/components/admin-dashboard";
 import Layout from "@/components/Layout";
 import { SettingsPageComponent } from "@/components/settings-page";
 import { VisaDetailsPageComponent } from "@/components/visa-details-page";
+import withAuth from "../../../app/leads/hooks/withAuth";
 
 
 
-export default function AdminDash() {
+function Visa() {
   return (
    <Layout>
     <VisaDetailsPageComponent/>
    </Layout>
   );
 }
+
+export default withAuth(Visa);

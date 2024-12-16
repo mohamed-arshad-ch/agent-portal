@@ -1,8 +1,9 @@
 import ClientSearch from "@/components/ClientSearch";
 import Layout from "@/components/Layout";
+import withAuth from "../../../app/leads/hooks/withAuth";
 
 
-export default function ClientDetailsPage() {
+function ClientDetailsPage() {
   return (
     (<Layout>
         <div className="container mx-auto p-4 max-w-4xl">
@@ -12,4 +13,6 @@ export default function ClientDetailsPage() {
     </Layout>)
   );
 }
+
+export default withAuth(ClientDetailsPage);
 
