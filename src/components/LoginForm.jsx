@@ -29,10 +29,13 @@ export default function LoginForm() {
       if (response.data.jwt) {
          const { jwt, user } = response.data;
 
+         const roleRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user-role`,{headers:{
+          Authorization:`Bearer ${jwt}`
+         }})
       // Save JWT and user details in localStorage
       localStorage.setItem('jwt', jwt);
       localStorage.setItem('user', JSON.stringify(user));
-
+      localStorage.setItem('flag',roleRes.data.role.name == "Admin"?0:1)
       console.log('Login successful:', user);
 
       // Redirect to admin dashboard
