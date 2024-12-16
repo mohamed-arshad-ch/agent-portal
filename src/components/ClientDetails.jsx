@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import axios from 'axios'
 
 export default function ClientDetails({
   clientId
@@ -9,12 +10,43 @@ export default function ClientDetails({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  const getClientDetails = async()=>{
+    try {
+      
+      const clientRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clients/${clientId}?populate=*`,{
+        headers:{
+          Authorization:`Bearer ${localStorage.getItem("jwt")}`
+        }
+      })
+
+      console.log(clientRes.data.data,"clientRes");
+      
+      const documentsRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/uploaded-documents?populate=*&filters[client][$eq]=${clientRes.data.data.id}`,{
+        headers:{
+          Authorization:`Bearer ${localStorage.getItem("jwt")}`
+        }
+      })
+
+      console.log(documentsRes.data.data,"documentRes");
+
+      const clientDetails = {
+        ...clientRes.data.data,
+        documents: documentsRes.data.data
+      }
+
+      return clientDetails
+
+    } catch (error) {
+      
+    }
+  }
+
   useEffect(() => {
     const fetchClientDetails = async () => {
       setLoading(true)
       setError(null)
       try {
-        // const data = await getClientDetails(clientId)
+        const data = await getClientDetails(clientId)
         setClientData(data)
       } catch (error) {
         console.error('Error fetching client details:', error)
@@ -46,13 +78,13 @@ export default function ClientDetails({
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <strong>Passport Number:</strong> {clientData.passportNumber}
+          <strong>Passport Number:</strong> {clientData.passport}
         </div>
         <div>
           <strong>Passport Photo:</strong>
           <div className="mt-2">
             <Image
-              src={clientData.passportPhoto}
+              src={clientData.passportsize_photo[0].url}
               alt="Passport Photo"
               width={200}
               height={200}
@@ -63,7 +95,7 @@ export default function ClientDetails({
           <strong>Passport Document:</strong>
           <div className="mt-2">
             <a
-              href={clientData.passportDocument}
+              href={clientData.passport_document[0].url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline">
@@ -77,12 +109,13 @@ export default function ClientDetails({
             <ul className="mt-2 space-y-2">
               {clientData.documents.map((doc, index) => (
                 <li key={index}>
+                  <span> {doc.document_type} : </span>
                   <a
                     href={doc.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline">
-                    {doc.name} ({doc.type.toUpperCase()})
+                    className="text-blue-500 hover:underline cursor-pointer">
+                     {doc.document[0].name} ({doc.document[0].mime.toUpperCase()})
                   </a>
                 </li>
               ))}

@@ -1,13 +1,17 @@
 // src/components/Layout.js
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import AgentSidebar from './AgentSidebar';
 
 export default function Layout({ children }) {
   const [activeTab, setActiveTab] = useState('');
+  const [hostType,setHostType] = useState(null)
 
-  const role = localStorage.getItem("flag")
+  useEffect(()=>{
+    const role = localStorage.getItem("flag")
+    setHostType(role)
+  },[])
 
   const setACtiveTabIn = (tab)=>{
 setActiveTab(tab)
@@ -15,8 +19,8 @@ setActiveTab(tab)
   }
   return (
     <div className="flex h-screen">
-      {role == "0"  && <Sidebar activeTab={activeTab} setActiveTab={setACtiveTabIn} />}
-      {role == "1"  && <AgentSidebar activeTab={activeTab} setActiveTab={setACtiveTabIn} />}
+      {hostType == "0"  && <Sidebar activeTab={activeTab} setActiveTab={setACtiveTabIn} />}
+      {hostType == "1"  && <AgentSidebar activeTab={activeTab} setActiveTab={setACtiveTabIn} />}
       
       <div className="flex-1 flex flex-col">
         <Header />

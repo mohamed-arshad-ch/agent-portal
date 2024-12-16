@@ -1,5 +1,5 @@
 // src/components/Sidebar.js
-import { Home, Users, CreditCard, FileText, Bell, Settings, Menu, X, Users2 } from "lucide-react";
+import { Home, Users, CreditCard, FileText, Bell, Settings, Menu, X, Users2, Printer } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from 'react';
@@ -59,6 +59,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           <SidebarItem icon={<FileText className="w-5 h-5" />} label="Visa" href="/visa" />
           <SidebarItem icon={<FileText className="w-5 h-5" />} label="MBBS" href="/mbbs" />
           <SidebarItem icon={<FileText className="w-5 h-5" />} label="Agreement" href="/agreement" />
+          <SidebarItem icon={<Printer className="w-5 h-5" />} label="Invoice" href="/invoice" />
           <SidebarItem icon={<Bell className="w-5 h-5" />} label="Notifications" href="/notifications" />
           <SidebarItem icon={<Settings className="w-5 h-5" />} label="Settings" href="/settings" />
         </nav>

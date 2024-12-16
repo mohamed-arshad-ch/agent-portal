@@ -30,7 +30,7 @@ export default function ClientSearch() {
   }
 
   const handleClientSelect = (client) => {
-    setSelectedClient(client)
+    setSelectedClient(client.documentId)
     setDisplayClientName(client.name)
     setClientSearch("")
   }
