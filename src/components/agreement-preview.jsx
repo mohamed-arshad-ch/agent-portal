@@ -56,7 +56,7 @@ export function AgreementPreview({
           <strong>Services to be Provided:</strong> The First Party agrees to assist the Second Party in obtaining a visa and work permit for employment abroad. The services include obtaining the visa, work permit, and arranging necessary travel documentation, including flight tickets.
         </li>
         <li>
-          <strong>Total Cost:</strong> The total cost for obtaining the visa, work permit, and other services, without flight tickets, is ₹<span className="font-medium">{data.totalCost.toLocaleString()}</span>.
+          <strong>Total Cost:</strong> The total cost for obtaining the visa, work permit, and other services {data.flightTicket?",without flight tickets":",with flight tickets"}, is ₹<span className="font-medium">{data.totalCost.toLocaleString()}</span>.
         </li>
         
      

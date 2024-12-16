@@ -135,7 +135,8 @@ export function ClientsPageComponent() {
             <DialogTitle>{isEditing ? "Edit Client" : "Add New Client"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
+           <div className="grid grid-cols-2 gap-2">
+           <div>
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
@@ -149,6 +150,7 @@ export function ClientsPageComponent() {
                 value={localPassportNumber}
                 onChange={(e) => setLocalPassportNumber(e.target.value)} />
             </div>
+           </div>
             <div>
               <Label htmlFor="document">Document Upload</Label>
               {localDocument ? (

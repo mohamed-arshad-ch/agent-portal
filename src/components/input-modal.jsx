@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Textarea } from './ui/textarea'
+import { Switch } from './ui/switch'
 
 export function InputModal({
   isOpen,
@@ -11,7 +13,7 @@ export function InputModal({
   initialData
 }) {
   const [formData, setFormData] = useState(initialData)
-
+  const [flightTicket, setFlightTicket] = useState(true)
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
@@ -20,6 +22,11 @@ export function InputModal({
   const handleSubmit = (e) => {
     e.preventDefault()
     onSubmit(formData)
+  }
+
+  const handleStatusChange = (id) => {
+    setFlightTicket(flightTicket == true ?false:true)
+    setFormData(prev => ({ ...prev, flightTicket: flightTicket }))
   }
 
   return (
@@ -43,20 +50,21 @@ export function InputModal({
               required
             />
           </div>
-          <div>
+         
+
+     
+        </div>
+        <div>
             <Label htmlFor="secondPartyAddress">Second Party Address</Label>
-            <Input
+            <Textarea
               id="secondPartyAddress"
               name="secondPartyAddress"
               value={formData.secondPartyAddress}
               onChange={handleChange}
               required
+              
             />
           </div>
-
-     
-        </div>
-
         <div>
     <Label htmlFor="aadharNumber">Aadhar Number</Label>
     <Input
@@ -65,6 +73,15 @@ export function InputModal({
       value={formData.aadharNumber}
       onChange={handleChange}
       required />
+  </div>
+
+  <div>
+    <Label htmlFor="flight-ticket">Flight Ticket</Label>
+    <Switch
+    id="flight-ticket"
+      
+                    checked={flightTicket}
+                    onCheckedChange={() => handleStatusChange()} />
   </div>
       </div>
 
