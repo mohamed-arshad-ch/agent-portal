@@ -4,13 +4,13 @@ export function LeadStageBadge({
   stage
 }) {
   const colorMap = {
-    'New': 'bg-blue-100 text-blue-800',
-    'Contacted': 'bg-yellow-100 text-yellow-800',
-    'Interested': 'bg-green-100 text-green-800',
-    'Qualified': 'bg-purple-100 text-purple-800',
-    'In Progress': 'bg-orange-100 text-orange-800',
-    'Closed Won': 'bg-green-100 text-green-800',
-    'Closed Lost': 'bg-red-100 text-red-800'
+    'new': 'bg-blue-100 text-blue-800',
+    'contacted': 'bg-yellow-100 text-yellow-800',
+    'interested': 'bg-green-100 text-green-800',
+    'qualified': 'bg-purple-100 text-purple-800',
+    'in-progress': 'bg-orange-100 text-orange-800',
+    'closed won': 'bg-green-100 text-green-800',
+    'closed lost': 'bg-red-100 text-red-800'
   }
 
   return (

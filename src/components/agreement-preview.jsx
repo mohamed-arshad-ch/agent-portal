@@ -1,6 +1,10 @@
+import { useEffect, useState } from "react";
+
 export function AgreementPreview({
   data
 }) {
+
+ 
   return (
     (
       <div className="printable-agreement border  p-8  relative text-sm leading-relaxed  bg-white max-w-4xl mx-auto ">
