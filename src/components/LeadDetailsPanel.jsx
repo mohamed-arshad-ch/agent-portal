@@ -3,7 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LeadStageBadge } from './LeadStageBadge'
 import { useLeads } from '../../app/leads/hooks/useLeads'
-
+import axios from 'axios'
 
 export default function LeadDetailsPanel({
   isOpen,
@@ -13,10 +13,26 @@ export default function LeadDetailsPanel({
   const [currentLead, setCurrentLead] = useState(lead)
   const { updateLead } = useLeads()
 
-  const handleStageChange = (newStage) => {
+  const handleStageChange = async (newStage) => {
     const updatedLead = { ...currentLead, stage: newStage }
     updateLead(updatedLead)
     setCurrentLead(updatedLead)
+
+    try {
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/leads/${currentLead.documentId}`, {
+        data: {
+          stage: newStage
+        }
+      },{headers:{
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      }})
+      console.log('Lead stage updated successfully')
+      window.location.reload()
+    } catch (error) {
+      console.error('Error updating lead stage:', error)
+    }
+
+    // window.location.reload();
   }
 
   return (
@@ -48,13 +64,13 @@ export default function LeadDetailsPanel({
                 <SelectValue placeholder="Select lead stage" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="New">New</SelectItem>
-                <SelectItem value="Contacted">Contacted</SelectItem>
-                <SelectItem value="Interested">Interested</SelectItem>
-                <SelectItem value="Qualified">Qualified</SelectItem>
-                <SelectItem value="In Progress">In Progress</SelectItem>
-                <SelectItem value="Closed Won">Closed Won</SelectItem>
-                <SelectItem value="Closed Lost">Closed Lost</SelectItem>
+                <SelectItem value="new">New</SelectItem>
+                <SelectItem value="contacted">Contacted</SelectItem>
+                <SelectItem value="interested">Interested</SelectItem>
+                <SelectItem value="qualified">Qualified</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="closed won">Closed Won</SelectItem>
+                <SelectItem value="closed lost">Closed Lost</SelectItem>
               </SelectContent>
             </Select>
           </div>

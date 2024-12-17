@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import axios from 'axios'
+import ImageContentSkeleton from './imageSkelton'
 
 export default function ClientDetails({
   clientId
@@ -60,7 +61,7 @@ export default function ClientDetails({
   }, [clientId])
 
   if (loading) {
-    return <div>Loading client details...</div>;
+    return <ImageContentSkeleton/>;
   }
 
   if (error) {
