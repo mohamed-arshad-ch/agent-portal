@@ -23,6 +23,7 @@ import {
 import { Eye, Trash2, X } from "lucide-react"
 import axios from 'axios'
 import { Input } from './ui/input'
+import TableLoader from './TableLoader'
 
 // Mock data for payments
 const initialPayments = [
@@ -34,7 +35,7 @@ const initialPayments = [
 export function PaymentPageComponent() {
   const [payments, setPayments] = useState([])
   const [selectedPayment, setSelectedPayment] = useState(null)
-
+  const [isLoading,setIsLoading] = useState(true)
 
    // Add new states for pagination, search, and filtering
    const [currentPage, setCurrentPage] = useState(1)
@@ -55,6 +56,7 @@ export function PaymentPageComponent() {
            }
          )
          setPayments(response.data.data)
+         setIsLoading(false)
        } catch (error) {
          console.error("Error fetching clients:", error)
        }
@@ -137,7 +139,10 @@ export function PaymentPageComponent() {
           </Select>
         </div>
 
-        <Table>
+        {
+          isLoading ? <TableLoader/>:
+          <>
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Client Name</TableHead>
@@ -193,6 +198,8 @@ export function PaymentPageComponent() {
             Next
           </Button>
         </div>
+          </>
+        }
         
       </div>
       {selectedPayment && (

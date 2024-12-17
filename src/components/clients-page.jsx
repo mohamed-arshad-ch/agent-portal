@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Label } from "@/components/ui/label"
 import { Edit, Trash2, Eye, Search, ChevronLeft, ChevronRight, Download, RemoveFormatting, Delete, DeleteIcon, TrashIcon } from "lucide-react"
 import axios from 'axios';
+import TableLoader from './TableLoader';
 
 // Mock client data
 
@@ -171,7 +172,7 @@ export function ClientsPageComponent() {
                 <div className="flex items-center justify-center w-full">
                   <label
                     htmlFor="dropzone-file"
-                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <svg
                         className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
@@ -321,7 +322,7 @@ formdata.append("files", file);
     );
   }
 
-  if (isLoading) return <div>Loading...</div>;
+  
   return (
     (<div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-2xl font-bold mb-4">Clients</h1>
@@ -336,69 +337,74 @@ formdata.append("files", file);
         </div>
         <Button onClick={() => setIsAddClientModalOpen(true)}>Add Client</Button>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Photo</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Passport Number</TableHead>
-            <TableHead>Actions</TableHead>
+     {
+      isLoading ? <TableLoader/>: <><Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Photo</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Passport Number</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {currentClients.map((client) => (
+          <TableRow key={client.id}>
+            <TableCell>
+              <Avatar>
+                <AvatarImage src={`${client.passportsize_photo[0].formats.small.url}`} />
+                <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+            </TableCell>
+            <TableCell>{client.name}</TableCell>
+            <TableCell>{client.passport}</TableCell>
+            <TableCell>
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    if (client) {
+                      setEditingClient({...client});
+                      setIsEditClientModalOpen(true);
+                    }
+                  }}>
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handleDeleteClient(client.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" onClick={() => setSelectedClient(client)}>
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </div>
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {currentClients.map((client) => (
-            <TableRow key={client.id}>
-              <TableCell>
-                <Avatar>
-                  <AvatarImage src={`${client.passportsize_photo[0].formats.small.url}`} />
-                  <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </TableCell>
-              <TableCell>{client.name}</TableCell>
-              <TableCell>{client.passport}</TableCell>
-              <TableCell>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => {
-                      if (client) {
-                        setEditingClient({...client});
-                        setIsEditClientModalOpen(true);
-                      }
-                    }}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleDeleteClient(client.id)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="icon" onClick={() => setSelectedClient(client)}>
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <div className="flex justify-between items-center mt-4">
-        <Button
-          variant="outline"
-          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}>
-          <ChevronLeft className="h-4 w-4 mr-2" /> Previous
-        </Button>
-        <span>Page {currentPage} of {totalPages}</span>
-        <Button
-          variant="outline"
-          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}>
-          Next <ChevronRight className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
+        ))}
+      </TableBody>
+    </Table>
+
+<div className="flex justify-between items-center mt-4">
+<Button
+  variant="outline"
+  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+  disabled={currentPage === 1}>
+  <ChevronLeft className="h-4 w-4 mr-2" /> Previous
+</Button>
+<span>Page {currentPage} of {totalPages}</span>
+<Button
+  variant="outline"
+  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+  disabled={currentPage === totalPages}>
+  Next <ChevronRight className="h-4 w-4 ml-2" />
+</Button>
+</div>
+</>
+     }
+     
       <ClientModal
         isOpen={isAddClientModalOpen}
         onClose={() => setIsAddClientModalOpen(false)}

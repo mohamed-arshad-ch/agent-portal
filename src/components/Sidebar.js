@@ -1,5 +1,5 @@
 // src/components/Sidebar.js
-import { Home, Users, CreditCard, FileText, Bell, Settings, Menu, X, Users2, Printer } from "lucide-react";
+import { Home, Users, CreditCard, FileText, Bell, Settings, Menu, X, Users2, Printer, FileBadge, UserCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from 'react';
@@ -51,14 +51,14 @@ export default function Sidebar({ activeTab, setActiveTab }) {
 
         <nav className="space-y-2">
           <SidebarItem icon={<Home className="w-5 h-5" />} label="Dashboard" href="/admin-dash" />
-          <SidebarItem icon={<Users2 className="w-5 h-5" />} label="Leads" href="/leads" />
+          <SidebarItem icon={<UserCircle className="w-5 h-5" />} label="Leads" href="/leads" />
           <SidebarItem icon={<Users className="w-5 h-5" />} label="Clients" href="/clients" />
           <SidebarItem icon={<FileText className="w-5 h-5" />} label="Clients Docs" href="/client-details" />
           <SidebarItem icon={<CreditCard className="w-5 h-5" />} label="Payments" href="/payments" />
           <SidebarItem icon={<FileText className="w-5 h-5" />} label="Documents" href="/documents" />
-          <SidebarItem icon={<FileText className="w-5 h-5" />} label="Visa" href="/visa" />
-          <SidebarItem icon={<FileText className="w-5 h-5" />} label="MBBS" href="/mbbs" />
-          <SidebarItem icon={<FileText className="w-5 h-5" />} label="Agreement" href="/agreement" />
+          {/* <SidebarItem icon={<FileText className="w-5 h-5" />} label="Visa" href="/visa" />
+          <SidebarItem icon={<FileText className="w-5 h-5" />} label="MBBS" href="/mbbs" /> */}
+          <SidebarItem icon={<FileBadge className="w-5 h-5" />} label="Agreement" href="/agreement" />
           <SidebarItem icon={<Printer className="w-5 h-5" />} label="Invoice" href="/invoice" />
           <SidebarItem icon={<Bell className="w-5 h-5" />} label="Notifications" href="/notifications" />
           <SidebarItem icon={<Settings className="w-5 h-5" />} label="Settings" href="/settings" />

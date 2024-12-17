@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import axios from 'axios'
+import TableLoader from './TableLoader'
 
 // Mock data for documents
 const mockDocuments = [
@@ -70,7 +71,7 @@ const [itemsPerPage] = useState(10);
 const [searchTerm, setSearchTerm] = useState("");
 const [filterDocumentType, setFilterDocumentType] = useState("");
 const [filterStatus, setFilterStatus] = useState("");
-
+const [isLoading,setIsLoading] = useState(true)
 
 const filteredDocuments = documents.filter(doc => {
   const matchesSearch = doc.client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -102,6 +103,7 @@ const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
         )
         console.log('Fetched clients:', response.data.data)
         setClientList(response.data.data)
+        
       } catch (error) {
         console.error("Error fetching clients:", error)
       }
@@ -132,6 +134,7 @@ const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
        console.log(res.data);
        
        setDocuments(res.data.data)
+       setIsLoading(false)
      } catch (error) {
        
      }
@@ -443,7 +446,10 @@ const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
     </Select>
   </div>
 </div>
-        <Table>
+        {
+          isLoading ? <TableLoader/>:
+          <>
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Client Name</TableHead>
@@ -514,6 +520,8 @@ const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
     </Button>
   </div>
 </div>
+          </>
+        }
       </div>
       {selectedDocument && (
         <div

@@ -15,6 +15,7 @@ import EditLeadModal from './EditLeadModal'
 import { LeadStageBadge } from './LeadStageBadge'
 import { Edit, Eye, Trash2 } from 'lucide-react'
 import { useLeads } from '../../app/leads/hooks/useLeads';
+import TableLoader from './TableLoader';
 
 export default function LeadsTable() {
   const { leads, isLoading, error, deleteLead } = useLeads()
@@ -30,7 +31,7 @@ export default function LeadsTable() {
 
   const totalPages = Math.ceil(leads.length / leadsPerPage)
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <TableLoader/>;
   if (error) return <div>Error: {error}</div>;
 
   return (
