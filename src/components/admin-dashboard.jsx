@@ -25,21 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Home, Users, CreditCard, FileText, Bell, Settings, MoreVertical, Upload, UserCircle, LogOut } from "lucide-react"
 
 export function AdminDashboardComponent() {
-  const [activeTab, setActiveTab] = useState('Dashboard')
-
-  const SidebarItem = ({
-    icon,
-    label
-  }) => (
-    <button
-      className={`flex items-center space-x-2 w-full p-2 rounded ${
-        activeTab === label ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'
-      }`}
-      onClick={() => setActiveTab(label)}>
-      {icon}
-      <span>{label}</span>
-    </button>
-  )
+ 
 
   const DashboardCard = ({
     title,
