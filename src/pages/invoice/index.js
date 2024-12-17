@@ -1,6 +1,7 @@
 import InvoicePreview from '@/components/InvoicePreview'
 import Layout from '@/components/Layout'
 import { useState } from 'react'
+import withAuth from '../../../app/leads/hooks/withAuth'
 
 
 const initialInvoice = {
@@ -18,7 +19,7 @@ const initialInvoice = {
   accountName: 'Hannah Morales'
 }
 
-export default function CreateInvoicePage() {
+ function CreateInvoicePage() {
   const [invoice, setInvoice] = useState(initialInvoice)
 
   const handleUpdateInvoice = (updatedInvoice) => {
@@ -34,4 +35,6 @@ export default function CreateInvoicePage() {
     </Layout>)
   );
 }
+
+export default withAuth(CreateInvoicePage)
 
