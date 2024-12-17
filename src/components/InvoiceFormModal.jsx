@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from './ui/textarea';
 
 export default function InvoiceFormModal({
   isOpen,
@@ -101,7 +102,6 @@ export default function InvoiceFormModal({
               <Input
                 id="customerPhone"
                 name="customerPhone"
-                type="email"
                 value={invoice.customerPhone}
                 onChange={handleChange}
                 required />
@@ -109,31 +109,32 @@ export default function InvoiceFormModal({
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="bankName">Bank Name</Label>
-              <Input
-                id="bankName"
-                name="bankName"
-                value={invoice.bankName}
+              <Label htmlFor="address">Customer Address</Label>
+              <Textarea
+                id="address"
+                name="address"
+                value={invoice.address}
                 onChange={handleChange}
                 required />
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="accountNo">Account No</Label>
-              <Input
-                id="accountNo"
-                name="accountNo"
-                value={invoice.accountNo}
+              <Label htmlFor="transferType">Transfer Type</Label>
+              <select
+                id="transferType"
+                name="transferType"
+                value={invoice.transferType}
                 onChange={handleChange}
-                required />
-            </div>
-            <div>
-              <Label htmlFor="accountName">Account Name</Label>
-              <Input
-                id="accountName"
-                name="accountName"
-                value={invoice.accountName}
-                onChange={handleChange}
-                required />
+                className="input-class"
+                required
+              >
+                <option value="">Select Transfer Type</option>
+                <option value="cash">Cash</option>
+                <option value="bank">Bank</option>
+                <option value="upi">UPI</option>
+              </select>
             </div>
           </div>
 

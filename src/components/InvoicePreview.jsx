@@ -14,6 +14,8 @@ export default function InvoicePreview({
   }
 
  
+  console.log(invoice);
+  
 
   const calculateTotal = () => {
     return calculateSubtotal() 
@@ -78,6 +80,16 @@ export default function InvoicePreview({
             <div>
               <h2 className="font-bold mb-1">Issued to:</h2>
               <p>{invoice.customerName}</p>
+              {invoice.address.split("\n").map((line, index) => (
+        <p key={index} className="mb-1">
+          {line}
+        </p>
+      ))}
+              
+            </div>
+            <div>
+              <h2 className="font-bold mb-1">Transaction Type:</h2>
+              <p>{invoice.transferType}</p>
             </div>
           </div>
           <div className="text-right space-y-1">
@@ -124,7 +136,7 @@ export default function InvoicePreview({
         </table>
 
         <div className="grid grid-cols-2 gap-8 mt-12">
-         
+       
           <div className="">
             <p className="text-5xl font-bold text-gray-300">THANK YOU</p>
           </div>
