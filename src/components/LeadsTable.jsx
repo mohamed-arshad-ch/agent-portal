@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Table,
   TableBody,
@@ -14,11 +14,13 @@ import LeadDetailsPanel from './LeadDetailsPanel'
 import EditLeadModal from './EditLeadModal'
 import { LeadStageBadge } from './LeadStageBadge'
 import { Edit, Eye, Trash2 } from 'lucide-react'
-import { useLeads } from '../../app/leads/hooks/useLeads';
+
 import TableLoader from './TableLoader';
+import formatDate from '@/lib/dateFormat';
+import { useLeads } from '../../app/leads/hooks/useLeads';
 
 export default function LeadsTable() {
-  const { leads, isLoading, error, deleteLead } = useLeads()
+  const { leads, isLoading, error, deleteLead,loadLeads } = useLeads()
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedLead, setSelectedLead] = useState(null) // Update 1: State for selectedLead
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -31,6 +33,11 @@ export default function LeadsTable() {
 
   const totalPages = Math.ceil(leads.length / leadsPerPage)
 
+// useEffect(()=>{
+//   loadLeads()
+// },[])
+  
+
   if (isLoading) return <TableLoader/>;
   if (error) return <div>Error: {error}</div>;
 
@@ -39,6 +46,7 @@ export default function LeadsTable() {
       <Table>
         <TableHeader>
           <TableRow>
+          <TableHead>Date</TableHead>
             <TableHead>Full Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone Number</TableHead>
@@ -50,6 +58,7 @@ export default function LeadsTable() {
         <TableBody>
           {currentLeads.map((lead) => (
             <TableRow key={lead.id}>
+              <TableCell>{formatDate(lead.createdAt)}</TableCell>
               <TableCell>{lead.fullName}</TableCell>
               <TableCell>{lead.email}</TableCell>
               <TableCell>{lead.phoneNumber}</TableCell>

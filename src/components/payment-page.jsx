@@ -24,6 +24,7 @@ import { Eye, Trash2, X } from "lucide-react"
 import axios from 'axios'
 import { Input } from './ui/input'
 import TableLoader from './TableLoader'
+import formatDate from '@/lib/dateFormat'
 
 // Mock data for payments
 const initialPayments = [
@@ -115,7 +116,7 @@ export function PaymentPageComponent() {
   }
 
   return (
-    (<div className="container mx-auto p-4 max-w-4xl flex">
+    (<div className="container mx-auto p-4 max-w-6xl flex">
       <div className="flex-grow">
         <h1 className="text-2xl font-bold mb-4">Payments</h1>
 
@@ -145,6 +146,7 @@ export function PaymentPageComponent() {
           <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Date</TableHead>
               <TableHead>Client Name</TableHead>
               <TableHead>Paid Amount</TableHead>
               <TableHead>Date</TableHead>
@@ -155,6 +157,7 @@ export function PaymentPageComponent() {
           <TableBody>
             {paginatedPayments.map((payment) => (
               <TableRow key={payment.id}>
+                <TableCell>{formatDate(payment.createdAt)}</TableCell>
                 <TableCell>{payment.client.name}</TableCell>
                 <TableCell>{payment.paidAmount}</TableCell>
                 <TableCell>{payment.createdAt}</TableCell>

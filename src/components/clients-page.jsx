@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label"
 import { Edit, Trash2, Eye, Search, ChevronLeft, ChevronRight, Download, RemoveFormatting, Delete, DeleteIcon, TrashIcon } from "lucide-react"
 import axios from 'axios';
 import TableLoader from './TableLoader';
+import formatDate from '@/lib/dateFormat';
 
 // Mock client data
 
@@ -324,7 +325,7 @@ formdata.append("files", file);
 
   
   return (
-    (<div className="container mx-auto p-4 max-w-4xl">
+    (<div className="container mx-auto p-4 max-w-6xl">
       <h1 className="text-2xl font-bold mb-4">Clients</h1>
       <div className="flex justify-between items-center mb-4">
         <div className="relative">
@@ -341,6 +342,7 @@ formdata.append("files", file);
       isLoading ? <TableLoader/>: <><Table>
       <TableHeader>
         <TableRow>
+          <TableHead>Date</TableHead>
           <TableHead>Photo</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Passport Number</TableHead>
@@ -350,6 +352,7 @@ formdata.append("files", file);
       <TableBody>
         {currentClients.map((client) => (
           <TableRow key={client.id}>
+             <TableCell>{formatDate(client.createdAt)}</TableCell>
             <TableCell>
               <Avatar>
                 <AvatarImage src={`${client.passportsize_photo[0].formats.small.url}`} />

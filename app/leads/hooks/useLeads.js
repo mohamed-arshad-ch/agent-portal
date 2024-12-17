@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react'
 
 // This is a mock API call. Replace with actual API calls in a real application.
-const fetchLeads = async () => {
+export const fetchLeads = async () => {
  
 
   try {
@@ -13,7 +13,7 @@ const fetchLeads = async () => {
       Authorization: `Bearer ${localStorage.getItem("jwt")}`,
     }})
     
-    if (response.ok) {
+    if (response.data) {
       const result = await response.data;
       return result.data
     } else {
@@ -34,35 +34,46 @@ export const useLeads = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    const loadLeads = async () => {
-      try {
-        const data = await fetchLeads()
-        setLeads(data)
-        setIsLoading(false)
-      } catch (err) {
-        setError('Failed to fetch leads')
-        setIsLoading(false)
-      }
+  const loadLeads = async () => {
+    try {
+      setIsLoading(true)
+      const data = await fetchLeads()
+      setLeads(data)
+      setIsLoading(false)
+    } catch (err) {
+      setError('Failed to fetch leads')
+      setIsLoading(false)
     }
+  }
+
+
+  useEffect(() => {
+   
 
     loadLeads()
   }, [])
 
-  const addLead = (newLead) => {
+ 
+
+ 
+
+
+
+  const addLead = async(newLead) => {
     const lead = { ...newLead, id: Date.now().toString() }
-    setLeads(prevLeads => [...prevLeads, lead])
+   await loadLeads()
+    // setLeads(prevLeads => [...prevLeads, lead])
+    // await fetchLeads();
   }
 
-  const updateLead = (updatedLead) => {
-    setLeads(prevLeads => prevLeads.map(lead => 
-      lead.id === updatedLead.id ? updatedLead : lead))
+  const updateLead = async(updatedLead) => {
+    // await loadLeads()
   }
 
-  const deleteLead = (id) => {
-    setLeads(prevLeads => prevLeads.filter(lead => lead.id !== id))
+  const deleteLead = async(id) => {
+    // await fetchLeads();
   }
 
-  return { leads, isLoading, error, addLead, updateLead, deleteLead }
+  return { leads, isLoading, error, addLead, updateLead, deleteLead,loadLeads }
 }
 

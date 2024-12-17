@@ -6,25 +6,57 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useLeads } from '../../app/leads/hooks/useLeads';
+import { useRouter } from 'next/router';
 
 
 export default function AddLeadModal({
   isOpen,
-  onClose
+  onClose,
 }) {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phoneNumber: '',
     serviceType: '',
+    city: '',
   })
-
+  const router = useRouter();
   const { addLead } = useLeads()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    addLead(formData)
-    onClose()
+
+    // Prepare the request body
+    const requestBody = {
+      data: formData
+    }
+
+    try {
+      // Make the API call
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/leads`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const result = await response.json()
+      console.log('Success:', result)
+
+      // Optionally, you can call addLead here if you want to update local state
+      addLead(formData)
+
+      // Close the modal
+      onClose()
+      window.location.reload();
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
   const handleChange = (e) => {
@@ -75,9 +107,9 @@ export default function AddLeadModal({
                 <SelectValue placeholder="Select service type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="consultation">Consultation</SelectItem>
-                <SelectItem value="repair">Repair</SelectItem>
-                <SelectItem value="installation">Installation</SelectItem>
+                <SelectItem value="job_visa">Job visa</SelectItem>
+                <SelectItem value="visa_service">Visa service</SelectItem>
+                <SelectItem value="mbbs_admission">Mbbs Admission</SelectItem>
               </SelectContent>
             </Select>
           </div>

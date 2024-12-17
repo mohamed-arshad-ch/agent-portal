@@ -35,6 +35,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import axios from 'axios'
 import TableLoader from './TableLoader'
+import formatDate from '@/lib/dateFormat'
 
 // Mock data for documents
 const mockDocuments = [
@@ -153,12 +154,14 @@ const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
           document_type:documentType,
           agent: JSON.parse(localStorage.getItem("user")).id,
           document: localDocument.id,
-          paidAmount: paidAmount,
+          paidAmount: Number(paidAmount),
           releasingDate:releasingDate,
           
         }
       };
 
+      console.log(requestBody,"dbhj");
+      
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/uploaded-documents`,
         requestBody,
@@ -201,7 +204,7 @@ const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
   }
 
   return (
-    (<div className="container mx-auto p-4 max-w-4xl flex">
+    (<div className="container mx-auto p-4 max-w-6xl flex">
       <div className="flex-grow">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Documents</h1>
@@ -452,6 +455,7 @@ const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
           <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Date</TableHead>
               <TableHead>Client Name</TableHead>
               <TableHead>Document Type</TableHead>
               <TableHead>Document Status</TableHead>
@@ -463,6 +467,7 @@ const totalPages = Math.ceil(filteredDocuments.length / itemsPerPage);
           <TableBody>
             {currentItems.map((doc) => (
               <TableRow key={doc.id}>
+                <TableCell>{formatDate(doc.createdAt)}</TableCell>
                 <TableCell>{doc.client.name}</TableCell>
                 <TableCell>{doc.document_type}</TableCell>
                 <TableCell>{doc.document_status}</TableCell>
