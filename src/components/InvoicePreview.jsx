@@ -80,7 +80,7 @@ export default function InvoicePreview({
             <div>
               <h2 className="font-bold mb-1">Issued to:</h2>
               <p>{invoice.customerName}</p>
-              {invoice.address.split("\n").map((line, index) => (
+              {invoice.address && invoice.address.split("\n").map((line, index) => (
         <p key={index} className="mb-1">
           {line}
         </p>
