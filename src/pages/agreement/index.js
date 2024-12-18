@@ -19,6 +19,7 @@ function AgreementGenerator() {
     advancePayment: 100000,
     remainingPayment: 200000,
     remainingPaymentDate: '2025-01-28',
+    remainingBetweenPayment:'2025-01-28',
     agreementDate: '2024-12-09',
     completionDate: '2025-01-28'
   })

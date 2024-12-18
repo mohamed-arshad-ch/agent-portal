@@ -74,10 +74,10 @@ export function AgreementPreview({
           <strong>Advance Payment:</strong> The Second Party shall pay an advance amount of ₹<span className="font-medium">{data.advancePayment.toLocaleString()}</span> to the First Party on the signing of this agreement. The remaining balance of ₹<span className="font-medium">{data.remainingPayment.toLocaleString()}</span> shall be paid by <span className="font-medium">{data.remainingPaymentDate}</span> to complete the payment.
         </li>
         <li className="">
-          <strong>Timeline for Service Completion:</strong> The First Party agrees to provide the visa and work permit services to the Second Party by <span className="font-medium">{data.completionDate}</span>, which is no later than 15 February 2025.
+          <strong>Timeline for Service Completion:</strong> The First Party agrees to provide the visa and work permit services to the Second Party by <span className="font-medium">{data.completionDate}</span>, which is no later than <span className="font-medium">{data.remainingBetweenPayment}</span>.
         </li>
         <li>
-          <strong>Refund Policy:</strong> If the First Party fails to provide the visa and work permit services as agreed by 15 February 2025, the First Party shall refund the entire advance amount of ₹<span className="font-medium">{data.advancePayment.toLocaleString()}</span> to the Second Party.
+          <strong>Refund Policy:</strong> If the First Party fails to provide the visa and work permit services as agreed by <span className="font-medium">{data.remainingBetweenPayment}</span>, the First Party shall refund the entire advance amount of ₹<span className="font-medium">{data.advancePayment.toLocaleString()}</span> to the Second Party.
         </li>
         <li>
           <strong>Liability for Damages:</strong> In case any party fails to fulfill the obligations or causes damages to the other party, the responsible party shall be liable for all costs and damages incurred by the other party due to non-performance.

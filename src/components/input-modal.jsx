@@ -122,6 +122,20 @@ export function InputModal({
               required
             />
           </div>
+
+          <div>
+            <Label htmlFor="remainingBetweenPayment">Remaining Between Payment (₹)</Label>
+            <Input
+              id="remainingBetweenPayment"
+              name="remainingBetweenPayment"
+              type="date"
+              value={formData.remainingBetweenPayment}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+
           <div>
             <Label htmlFor="remainingPaymentDate">Remaining Payment Date</Label>
             <Input
